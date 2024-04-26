@@ -72,11 +72,10 @@ void GameScene::Update() {
 
 	// デモウィンドウ
 	ImGui::ShowDemoWindow();
+	#endif
 
 	// デバッグカメラの更新
 	debugCamera_->Update();
-
-	#endif
 }
 
 void GameScene::Draw() {
@@ -110,9 +109,10 @@ void GameScene::Draw() {
 	//model_->Draw(worldTransform_, viewProjection_, textureHandle_);
 	model_->Draw(worldTransform_, debugCamera_->GetViewProjection(), textureHandle_);
 
+	#ifdef  _DEBUG
 	// ラインを描画する
 	PrimitiveDrawer::GetInstance()->DrawLine3d({0, 0, 0}, {0, 10, 0}, {1.0f, 0.0f, 0.0f, 1.0f});
-
+	#endif
 
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();
