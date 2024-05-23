@@ -10,6 +10,8 @@
 #include <vector>
 #include "DebugCamera.h"
 
+#include "Skydome.h"
+
 /// <summary>
 /// ゲームシーン
 /// </summary>
@@ -55,4 +57,10 @@ private: // メンバ変数
 	ViewProjection viewProjection_;
 	bool isDebugCameraActive_ = false;
 	DebugCamera* debugCamera_ = nullptr;
+
+	// skydome
+	Skydome* skydome_ = nullptr;
+	// 3Dモデル
+	Model* modelSkydome_ = nullptr;
+	
 };

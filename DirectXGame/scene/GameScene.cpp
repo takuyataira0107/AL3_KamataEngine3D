@@ -14,6 +14,10 @@ GameScene::~GameScene() {
 	}
 	worldTransformBlocks_.clear();
 	delete debugCamera_;
+
+	// skydomeの解放
+	delete skydome_;
+	delete modelSkydome_;
 }
 
 void GameScene::Initialize() {
@@ -51,6 +55,14 @@ void GameScene::Initialize() {
 		}
 	}
 	debugCamera_ = new DebugCamera(WinApp::kWindowWidth, WinApp::kWindowHeight);
+
+	
+	skydome_ = new Skydome();
+	// 3Dモデルの生成
+	modelSkydome_ = Model::CreateFromOBJ("skydome", true);
+
+	skydome_->Initialize(modelSkydome_, &viewProjection_);
+
 }
 
 void GameScene::Update() { 
@@ -77,6 +89,9 @@ void GameScene::Update() {
 	} else {
 		viewProjection_.UpdateMatrix();
 	}
+
+	// skydomeの更新
+	skydome_->Update();
 }
 
 void GameScene::Draw() {
@@ -105,6 +120,9 @@ void GameScene::Draw() {
 	/// <summary>
 	/// ここに3Dオブジェクトの描画処理を追加できる
 	/// </summary>
+	
+	// skydomeの描画
+	skydome_->Draw();
 	for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_) {
 		for (WorldTransform* worldTransformBlock : worldTransformBlockLine) {
 			if (!worldTransformBlock)
@@ -112,6 +130,8 @@ void GameScene::Draw() {
 			model_->Draw(*worldTransformBlock, viewProjection_);
 		}
 	}
+
+	
 
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();
