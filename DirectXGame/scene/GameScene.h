@@ -10,6 +10,7 @@
 #include <vector>
 #include "DebugCamera.h"
 
+#include "Player.h"
 #include "Skydome.h"
 #include "MapChipField.h"
 
@@ -55,16 +56,25 @@ private: // メンバ変数
 	/// ゲームシーン用
 	/// </summary>
 	
+	uint32_t textureHandle_;
 	Model* model_ = nullptr;
 	std::vector<std::vector<WorldTransform*>> worldTransformBlocks_;
+
+	WorldTransform worldTransform_;
 	ViewProjection viewProjection_;
+
 	bool isDebugCameraActive_ = false;
 	DebugCamera* debugCamera_ = nullptr;
+
+
+	// 自キャラ
+	Player* player_ = nullptr;
 
 	// skydome
 	Skydome* skydome_ = nullptr;
 	// 3Dモデル
 	Model* modelSkydome_ = nullptr;
+	Model* modelPlayer_ = nullptr;
 	
 	// マップチップフィールド
 	MapChipField* mapChipField_;

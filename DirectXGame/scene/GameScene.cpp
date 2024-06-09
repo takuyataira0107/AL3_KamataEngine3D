@@ -15,6 +15,8 @@ GameScene::~GameScene() {
 	worldTransformBlocks_.clear();
 	delete debugCamera_;
 
+	delete player_;
+
 	// skydomeの解放
 	delete skydome_;
 	delete modelSkydome_;
@@ -28,7 +30,10 @@ void GameScene::Initialize() {
 	input_ = Input::GetInstance();
 	audio_ = Audio::GetInstance();
 
+	//textureHandle_ = TextureManager::Load("mario.jpg");
 	model_ = Model::Create();
+
+	worldTransform_.Initialize();
 	viewProjection_.Initialize();
 
 	mapChipField_ = new MapChipField;
@@ -38,6 +43,15 @@ void GameScene::Initialize() {
 	debugCamera_ = new DebugCamera(WinApp::kWindowWidth, WinApp::kWindowHeight);
 
 	
+	// 自キャラの生成
+	player_ = new Player();
+	modelPlayer_ = Model::CreateFromOBJ("player", true);
+
+	// 座標をマップチップ番号で指定
+	Vector3 playerPosition = mapChipField_->GetMapChipPositionByIndex(3, 18);
+	// 自キャラの初期化
+	player_->Initialize(modelPlayer_, &viewProjection_, playerPosition);
+
 	skydome_ = new Skydome();
 	// 3Dモデルの生成
 	modelSkydome_ = Model::CreateFromOBJ("skydome", true);
@@ -46,6 +60,9 @@ void GameScene::Initialize() {
 }
 
 void GameScene::Update() { 
+	// 自キャラの更新
+	player_->Update();
+
 	for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_) {
 		for (WorldTransform* worldTransformBlock : worldTransformBlockLine) {
 			if (!worldTransformBlock)
@@ -101,6 +118,8 @@ void GameScene::Draw() {
 	/// ここに3Dオブジェクトの描画処理を追加できる
 	/// </summary>
 	
+	
+
 	// skydomeの描画
 	skydome_->Draw();
 	for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_) {
@@ -111,7 +130,8 @@ void GameScene::Draw() {
 		}
 	}
 
-	
+	// 自キャラの描画
+	player_->Draw();
 
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();
