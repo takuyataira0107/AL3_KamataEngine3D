@@ -100,21 +100,7 @@ void Player::Update() {
 			onGround_ = false;
 		}
 
-		// 旋回制御
-		if (turnTimer_ > 0.0f) {
-			//*********
-			if (turnTimer_ < 1.0f) {
-				turnTimer_ += 1.0f / 60.0f;
-			}
-			// 左右の自キャラ角度テーブル
-			float destinationRotationYTable[] = {std::numbers::pi_v<float> / 2.0f, std::numbers::pi_v<float> * 3.0f / 2.0f};
-			// 状態に応じた角度を取得する
-			float destinationRotationY = destinationRotationYTable[static_cast<uint32_t>(lrDirection_)];
-			// 自キャラの角度を設定する
-			// worldTransform_.rotation_.y = destinationRotationY;
-			//*******
-			worldTransform_.rotation_.y = Player::Lerp(turnFirstRotationY_, destinationRotationY, easeInOutCubic(turnTimer_));
-		}
+		
 	} else {
 		// 落下速度
 		velocity_.y += -kGravityAcceleration;
@@ -132,6 +118,22 @@ void Player::Update() {
 			// 接地状態に移行
 			onGround_ = true;
 		}
+	}
+
+	// 旋回制御
+	if (turnTimer_ > 0.0f) {
+		//*********
+		if (turnTimer_ < 1.0f) {
+			turnTimer_ += 1.0f / 60.0f;
+		}
+		// 左右の自キャラ角度テーブル
+		float destinationRotationYTable[] = {std::numbers::pi_v<float> / 2.0f, std::numbers::pi_v<float> * 3.0f / 2.0f};
+		// 状態に応じた角度を取得する
+		float destinationRotationY = destinationRotationYTable[static_cast<uint32_t>(lrDirection_)];
+		// 自キャラの角度を設定する
+		// worldTransform_.rotation_.y = destinationRotationY;
+		//*******
+		worldTransform_.rotation_.y = Player::Lerp(turnFirstRotationY_, destinationRotationY, easeInOutCubic(turnTimer_));
 	}
 
 	// 移動

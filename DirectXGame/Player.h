@@ -33,6 +33,10 @@ public:
 	float Lerp(float start, float end, float t) { return (1.0f - t) * start + t * end; }
 	float easeInOutCubic(float x) { return x < 0.5 ? 4 * x * x * x : 1 - powf(-2 * x + 2, 3) / 2; }
 
+	const WorldTransform& GetWorldTransform() const { return worldTransform_; }
+	const Vector3& GetVelocity() const { return velocity_; }
+	const Vector3& GetPlayerPosition() const { return worldTransform_.translation_; }
+
 private:
 	static inline const float kAcceleration = 0.08f;
 	static inline const float kAttenuation = 0.02f;

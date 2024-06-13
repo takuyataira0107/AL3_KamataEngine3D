@@ -22,6 +22,7 @@ GameScene::~GameScene() {
 	delete modelSkydome_;
 
 	delete mapChipField_;
+	delete cameraController_;
 }
 
 void GameScene::Initialize() {
@@ -57,6 +58,18 @@ void GameScene::Initialize() {
 	modelSkydome_ = Model::CreateFromOBJ("skydome", true);
 
 	skydome_->Initialize(modelSkydome_, &viewProjection_);
+
+	// カメラの生成
+	cameraController_ = new CameraController();
+	// カメラの初期化
+	cameraController_->Initialize();
+	// カメラの追従対象をリセット
+	cameraController_->SetTarget(player_);
+	// カメラをリセット（瞬間合わせ）
+	cameraController_->Reset();
+
+	// カメラの移動範囲を指定
+	cameraController_->SetMovableArea_(cameraArea);
 }
 
 void GameScene::Update() { 
@@ -84,11 +97,17 @@ void GameScene::Update() {
 		viewProjection_.matProjection = debugCamera_->GetViewProjection().matProjection;
 		viewProjection_.TransferMatrix();
 	} else {
-		viewProjection_.UpdateMatrix();
+		viewProjection_.matView = cameraController_->GetViewProjection().matView;
+		viewProjection_.matProjection = cameraController_->GetViewProjection().matProjection;
+		// ビュープロジェクション行列の転送
+		viewProjection_.TransferMatrix();
 	}
 
 	// skydomeの更新
 	skydome_->Update();
+
+	// カメラを更新
+	cameraController_->Update();
 }
 
 void GameScene::Draw() {
