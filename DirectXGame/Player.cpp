@@ -4,6 +4,7 @@
 #include <numbers>
 #include <input.h>
 #include <algorithm>
+#include "MathUtilityForText.h"
 
 
 void Player::Initialize(Model* model, ViewProjection* viewProjection, const Vector3& position) { 
@@ -77,9 +78,7 @@ void Player::Update() {
 				}
 			}
 			// 加速/減速
-			velocity_.x += acceleration.x;
-			velocity_.y += acceleration.y;
-			velocity_.z += acceleration.z;
+			velocity_ += acceleration;
 
 			// 最大速度制限
 			velocity_.x = std::clamp(velocity_.x, -kLimitRunSpeed, kLimitRunSpeed);
@@ -133,13 +132,11 @@ void Player::Update() {
 		// 自キャラの角度を設定する
 		// worldTransform_.rotation_.y = destinationRotationY;
 		//*******
-		worldTransform_.rotation_.y = Player::Lerp(turnFirstRotationY_, destinationRotationY, easeInOutCubic(turnTimer_));
+		worldTransform_.rotation_.y = Player::fLerp(turnFirstRotationY_, destinationRotationY, easeInOutCubic(turnTimer_));
 	}
 
 	// 移動
-	worldTransform_.translation_.x += velocity_.x;
-	worldTransform_.translation_.y += velocity_.y;
-	worldTransform_.translation_.z += velocity_.z;
+	worldTransform_.translation_ += velocity_;
 
 	// 行列計算
 	worldTransform_.UpdateMatrix();

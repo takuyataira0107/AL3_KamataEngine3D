@@ -1,6 +1,15 @@
 #include "CameraController.h"
 #include "Player.h"
 #include <algorithm>
+#include <MathUtilityForText.h>
+
+Vector3 CameraController::Lerp(Vector3 start, Vector3 end, float t) {
+	Vector3 result;
+	result.x = (1.0f - t) * start.x + t * end.x;
+	result.y = (1.0f - t) * start.y + t * end.y;
+	result.z = (1.0f - t) * start.z + t * end.z;
+	return result;
+}
 
 void CameraController::Initialize() {
 	// ビュープロジェクションの初期化
@@ -14,14 +23,10 @@ void CameraController::Update() {
 	const Vector3& targetPosition = target_->GetPlayerPosition();
 
 	// 追従対象とオフセットと追従対象からカメラの目標座標を計算
-	goalCoord_.x = targetWorldTransform.translation_.x + targetOffset_.x + targetVelocity.x * kVelocityBias;
-	goalCoord_.y = targetWorldTransform.translation_.y + targetOffset_.y + targetVelocity.y * kVelocityBias;
-	goalCoord_.z = targetWorldTransform.translation_.z + targetOffset_.z + targetVelocity.z * kVelocityBias;
+	goalCoord_ = targetWorldTransform.translation_ + targetOffset_ + targetVelocity * kVelocityBias;
 
 	// 座標補間によりゆったり追従
-	viewProjection_.translation_.x = Lerp(viewProjection_.translation_.x, goalCoord_.x, kInterpolationRate);
-	viewProjection_.translation_.y = Lerp(viewProjection_.translation_.y, goalCoord_.y, kInterpolationRate);
-	viewProjection_.translation_.z = Lerp(viewProjection_.translation_.z, goalCoord_.z, kInterpolationRate);
+	viewProjection_.translation_ = Lerp(viewProjection_.translation_, goalCoord_, kInterpolationRate);
 	
 	// 追従対象が画面外に出ないように補正
 	viewProjection_.translation_.x = std::clamp(viewProjection_.translation_.x, targetPosition.x + margin.left, targetPosition.x + margin.right);
@@ -38,7 +43,5 @@ void CameraController::Reset() {
 	// 追従対象のワールドトランスフォームを参照
 	const WorldTransform& targetWorldTransform = target_->GetWorldTransform();
 	// 追従対象とオフセットからカメラの座標を計算
-	viewProjection_.translation_.x = targetWorldTransform.translation_.x + targetOffset_.x;
-	viewProjection_.translation_.y = targetWorldTransform.translation_.y + targetOffset_.y;
-	viewProjection_.translation_.z = targetWorldTransform.translation_.z + targetOffset_.z;
+	viewProjection_.translation_ = targetWorldTransform.translation_ + targetOffset_;
 }

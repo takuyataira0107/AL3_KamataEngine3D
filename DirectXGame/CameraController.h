@@ -37,7 +37,7 @@ public:
 	void Reset();
 
 	// 線形補間
-	float Lerp(float start, float end, float t) { return (1.0f - t) * start + t * end; }
+	Vector3 Lerp(Vector3 start, Vector3 end, float t);
 
 	void SetTarget(Player* target) { target_ = target; }
 	void SetMovableArea_(Rect area) { movableArea_ = area; }

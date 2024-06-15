@@ -30,7 +30,7 @@ public:
 	/// <summary>
 	/// イージング関数
 	/// </summary>
-	float Lerp(float start, float end, float t) { return (1.0f - t) * start + t * end; }
+	float fLerp(float start, float end, float t) { return (1.0f - t) * start + t * end; }
 	float easeInOutCubic(float x) { return x < 0.5 ? 4 * x * x * x : 1 - powf(-2 * x + 2, 3) / 2; }
 
 	const WorldTransform& GetWorldTransform() const { return worldTransform_; }

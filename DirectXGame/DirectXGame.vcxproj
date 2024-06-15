@@ -113,6 +113,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MakeMatrix.cpp" />
     <ClCompile Include="MapChipField.cpp" />
+    <ClCompile Include="MathUtilityForText.cpp" />
     <ClCompile Include="MatrixCalc.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="scene\GameScene.cpp" />
@@ -147,6 +148,7 @@
     <ClInclude Include="input\Input.h" />
     <ClInclude Include="MakeMatrix.h" />
     <ClInclude Include="MapChipField.h" />
+    <ClInclude Include="MathUtilityForText.h" />
     <ClInclude Include="math\Matrix4x4.h" />
     <ClInclude Include="math\Vector2.h" />
     <ClInclude Include="math\Vector3.h" />
