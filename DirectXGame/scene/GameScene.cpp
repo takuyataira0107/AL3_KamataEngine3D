@@ -68,7 +68,6 @@ void GameScene::Initialize() {
 	cameraController_->SetTarget(player_);
 	// カメラをリセット（瞬間合わせ）
 	cameraController_->Reset();
-
 	// カメラの移動範囲を指定
 	cameraController_->SetMovableArea_(cameraArea);
 }
