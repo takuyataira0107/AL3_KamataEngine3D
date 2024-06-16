@@ -60,6 +60,8 @@ void GameScene::Initialize() {
 	// 自キャラの初期化
 	player_->Initialize(modelPlayer_, &viewProjection_, playerPosition);
 
+	player_->SetMapChipField(mapChipField_);
+
 	// カメラの生成
 	cameraController_ = new CameraController();
 	// カメラの初期化
