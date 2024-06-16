@@ -6,6 +6,7 @@
 GameScene::GameScene() {}
 
 GameScene::~GameScene() {
+	// 解放処理
 	delete model_; 
 	for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_) {
 		for (WorldTransform* worldTransformBlock : worldTransformBlockLine) {
@@ -14,14 +15,10 @@ GameScene::~GameScene() {
 	}
 	worldTransformBlocks_.clear();
 	delete debugCamera_;
-
-	delete player_;
-
-	// skydomeの解放
 	delete skydome_;
 	delete modelSkydome_;
-
 	delete mapChipField_;
+	delete player_;
 	delete cameraController_;
 }
 
@@ -31,33 +28,37 @@ void GameScene::Initialize() {
 	input_ = Input::GetInstance();
 	audio_ = Audio::GetInstance();
 
-	//textureHandle_ = TextureManager::Load("mario.jpg");
+	// 3Dモデルの生成
 	model_ = Model::Create();
 
+	// ワールドトランスフォームの初期化
 	worldTransform_.Initialize();
+	// ビュープロジェクションの初期化
 	viewProjection_.Initialize();
-
-	mapChipField_ = new MapChipField;
-	mapChipField_->LoadMapChipCsv("Resources/blocks.csv");
-	GenerateBlocks();
 	
+	// デバッグカメラの生成
 	debugCamera_ = new DebugCamera(WinApp::kWindowWidth, WinApp::kWindowHeight);
 
-	
-	// 自キャラの生成
-	player_ = new Player();
-	modelPlayer_ = Model::CreateFromOBJ("player", true);
+	// 天球を生成
+	skydome_ = new Skydome();
+	modelSkydome_ = Model::CreateFromOBJ("skydome", true);
+	// 天球を初期化
+	skydome_->Initialize(modelSkydome_, &viewProjection_);
 
 	// 座標をマップチップ番号で指定
 	Vector3 playerPosition = mapChipField_->GetMapChipPositionByIndex(3, 18);
+
+	// マップチップの生成
+	mapChipField_ = new MapChipField;
+	mapChipField_->LoadMapChipCsv("Resources/blocks.csv");
+	// マップチップの初期化
+	GenerateBlocks();
+
+	// 自キャラの生成
+	player_ = new Player();
+	modelPlayer_ = Model::CreateFromOBJ("player", true);
 	// 自キャラの初期化
 	player_->Initialize(modelPlayer_, &viewProjection_, playerPosition);
-
-	skydome_ = new Skydome();
-	// 3Dモデルの生成
-	modelSkydome_ = Model::CreateFromOBJ("skydome", true);
-
-	skydome_->Initialize(modelSkydome_, &viewProjection_);
 
 	// カメラの生成
 	cameraController_ = new CameraController();
@@ -83,6 +84,8 @@ void GameScene::Update() {
 			worldTransformBlock->UpdateMatrix();
 		}
 	}
+
+	// デバッグカメラを更新
 	debugCamera_->Update();
 
 #ifdef _DEBUG
@@ -136,8 +139,7 @@ void GameScene::Draw() {
 	/// <summary>
 	/// ここに3Dオブジェクトの描画処理を追加できる
 	/// </summary>
-	
-	
+
 
 	// skydomeの描画
 	skydome_->Draw();
