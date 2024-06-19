@@ -11,7 +11,7 @@ GameScene::~GameScene() {
 		for (WorldTransform* worldTransformBlock : worldTransformBlockLine) {
 			delete worldTransformBlock;
 		}
-	}
+	} 
 	worldTransformBlocks_.clear();
 	delete debugCamera_;
 }
