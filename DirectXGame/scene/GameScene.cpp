@@ -7,7 +7,7 @@ GameScene::GameScene() {}
 
 GameScene::~GameScene() {
 	// 解放処理
-	delete model_; 
+	delete modelBlock_;
 	for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_) {
 		for (WorldTransform* worldTransformBlock : worldTransformBlockLine) {
 			delete worldTransformBlock;
@@ -28,9 +28,6 @@ void GameScene::Initialize() {
 	input_ = Input::GetInstance();
 	audio_ = Audio::GetInstance();
 
-	// 3Dモデルの生成
-	model_ = Model::Create();
-
 	// ワールドトランスフォームの初期化
 	worldTransform_.Initialize();
 	// ビュープロジェクションの初期化
@@ -45,14 +42,17 @@ void GameScene::Initialize() {
 	// 天球を初期化
 	skydome_->Initialize(modelSkydome_, &viewProjection_);
 
-	// 座標をマップチップ番号で指定
-	Vector3 playerPosition = mapChipField_->GetMapChipPositionByIndex(3, 18);
+	// ブロックの生成
+	modelBlock_ = Model::CreateFromOBJ("block", true);
 
 	// マップチップの生成
 	mapChipField_ = new MapChipField;
 	mapChipField_->LoadMapChipCsv("Resources/blocks.csv");
 	// マップチップの初期化
 	GenerateBlocks();
+
+	// 座標をマップチップ番号で指定
+	Vector3 playerPosition = mapChipField_->GetMapChipPositionByIndex(3, 18);
 
 	// 自キャラの生成
 	player_ = new Player();
@@ -147,7 +147,7 @@ void GameScene::Draw() {
 		for (WorldTransform* worldTransformBlock : worldTransformBlockLine) {
 			if (!worldTransformBlock)
 				continue;
-			model_->Draw(*worldTransformBlock, viewProjection_);
+			modelBlock_->Draw(*worldTransformBlock, viewProjection_);
 		}
 	}
 
