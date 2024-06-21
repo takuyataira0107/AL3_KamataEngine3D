@@ -15,14 +15,14 @@ public:
 	struct CollisionMapInfo {
 		bool ceilingCollision = false;
 		bool landing = false;
-		bool wallContact = false;
+		bool hitWall = false;
 		Vector3 move;
 	};
 
 	// 角
 	enum Corner {
 		kRightBottom,   // 右下
-		kLeftBotton,    // 左下
+		kLeftBottom,    // 左下
 		kRightTop,      // 右上
 		kLeftTop,       // 左上
 
@@ -51,10 +51,10 @@ public:
 	/// マップ衝突判定
 	/// </summary>
 	void MapCollision(CollisionMapInfo& info);
-	void MapTopCollision(CollisionMapInfo& info);
-//	void MapBottomCollision(CollisionMapInfo& info);
-//	void MapRightCollision(CollisionMapInfo& info);
-//	void MapLeftCollision(CollisionMapInfo& info);
+	void MapCollisionTop(CollisionMapInfo& info);
+	void MapCollisionBottom(CollisionMapInfo& info);
+	void MapCollisionRight(CollisionMapInfo& info);
+	void MapCollisionLeft(CollisionMapInfo& info);
 
 	/// <summary>
 	/// 判定結果を判定して移動させる
@@ -64,7 +64,17 @@ public:
 	/// <summary>
 	/// 天井に接触している場合の処理
 	/// </summary>
-	void CeilingHif(const CollisionMapInfo& info);
+	void HitCeilingCase(const CollisionMapInfo& info);
+
+	/// <summary>
+	/// 接地状態の切り替え処理
+	/// </summary>
+	void SwitchingOnGround(const CollisionMapInfo& info);
+
+	/// <summary>
+	/// 壁に接触している場合の処理
+	/// </summary>
+	void HitWallCase(const CollisionMapInfo& info);
 
 	/// <summary>
 	/// 旋回制御
@@ -107,7 +117,13 @@ private:
 	// キャラクターの当たり判定サイズ
 	static inline const float kWidth = 0.8f;
 	static inline const float kHeight = 0.8f;
-	static inline const float kBlank = 0.3f;
+	static inline const float kBlank = 0.02f;
+
+	// 着地時の速度減衰率
+	static inline const float kAttenuationLanding = 0.0f;
+	static inline const float kCollisionExtension = 0.05f;
+	// 着地時の速度減衰率
+	static inline const float kAttenuationWall = 0.3f;
 
 	// ワールド変換データ
 	WorldTransform worldTransform_;
