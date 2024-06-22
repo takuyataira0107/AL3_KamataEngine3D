@@ -19,6 +19,9 @@ GameScene::~GameScene() {
 	delete modelSkydome_;
 	delete mapChipField_;
 	delete player_;
+	delete modelPlayer_;
+	delete enemy_;
+	delete modelEnemy_;
 	delete cameraController_;
 }
 
@@ -53,14 +56,20 @@ void GameScene::Initialize() {
 
 	// 座標をマップチップ番号で指定
 	Vector3 playerPosition = mapChipField_->GetMapChipPositionByIndex(3, 18);
-
 	// 自キャラの生成
 	player_ = new Player();
 	modelPlayer_ = Model::CreateFromOBJ("player", true);
 	// 自キャラの初期化
 	player_->Initialize(modelPlayer_, &viewProjection_, playerPosition);
-
 	player_->SetMapChipField(mapChipField_);
+
+	// 敵キャラの座標
+	Vector3 enemyPosition = mapChipField_->GetMapChipPositionByIndex(16, 18);
+	// 敵キャラの生成
+	enemy_ = new Enemy();
+	modelEnemy_ = Model::CreateFromOBJ("enemy", true);
+	// 敵キャラの初期化
+	enemy_->Initialize(modelEnemy_, &viewProjection_, enemyPosition);
 
 	// カメラの生成
 	cameraController_ = new CameraController();
@@ -75,26 +84,15 @@ void GameScene::Initialize() {
 }
 
 void GameScene::Update() { 
-	// 自キャラの更新
-	player_->Update();
-
-	for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_) {
-		for (WorldTransform* worldTransformBlock : worldTransformBlockLine) {
-			if (!worldTransformBlock)
-				continue;
-			worldTransformBlock->UpdateMatrix();
-		}
-	}
 
 	// デバッグカメラを更新
 	debugCamera_->Update();
-
 #ifdef _DEBUG
+	// カメラモード切り替え
 	if (input_->TriggerKey(DIK_SPACE)) {
 		isDebugCameraActive_ = true;
 	}
 #endif
-	
 	if (isDebugCameraActive_) {
 		debugCamera_->Update();
 		viewProjection_.matView = debugCamera_->GetViewProjection().matView;
@@ -109,6 +107,21 @@ void GameScene::Update() {
 
 	// skydomeの更新
 	skydome_->Update();
+
+	// ブロックの更新
+	for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_) {
+		for (WorldTransform* worldTransformBlock : worldTransformBlockLine) {
+			if (!worldTransformBlock)
+				continue;
+			worldTransformBlock->UpdateMatrix();
+		}
+	}
+
+	// 自キャラの更新
+	player_->Update();
+
+	// 敵キャラの更新
+	enemy_->Update();
 
 	// カメラを更新
 	cameraController_->Update();
@@ -143,6 +156,8 @@ void GameScene::Draw() {
 
 	// skydomeの描画
 	skydome_->Draw();
+
+	// ブロックの描画
 	for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_) {
 		for (WorldTransform* worldTransformBlock : worldTransformBlockLine) {
 			if (!worldTransformBlock)
@@ -153,6 +168,9 @@ void GameScene::Draw() {
 
 	// 自キャラの描画
 	player_->Draw();
+
+	// 敵キャラの描画
+	enemy_->Draw();
 
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();

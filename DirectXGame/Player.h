@@ -11,6 +11,26 @@ enum class LRDirection {
 
 class Player {
 public:
+	static inline const float kAcceleration = 0.04f;
+	static inline const float kAttenuation = 0.02f;
+	static inline const float kLimitRunSpeed = 0.1f;
+	// 旋回時間<秒>
+	static inline const float kTimeTurn = 0.3f;
+	// 重力加速度（下方向）
+	static inline const float kGravityAcceleration = 0.05f;
+	// 最大落下速度（下方向）
+	static inline const float kLimitFallSpeed = 0.2f;
+	// ジャンプ初速（上方向）
+	static inline const float kJumpAcceleration = 0.5f;
+	// キャラクターの当たり判定サイズ
+	static inline const float kWidth = 0.8f;
+	static inline const float kHeight = 0.8f;
+	static inline const float kBlank = 0.02f;
+	// 着地時の速度減衰率
+	static inline const float kAttenuationLanding = 0.0f;
+	static inline const float kCollisionExtension = 0.05f;
+	// 着地時の速度減衰率
+	static inline const float kAttenuationWall = 0.3f;
 
 	struct CollisionMapInfo {
 		bool ceilingCollision = false;
@@ -103,35 +123,11 @@ public:
 	void SetMapChipField(MapChipField* mapChipField) { mapChipField_ = mapChipField; }
 
 private:
-	static inline const float kAcceleration = 0.04f;
-	static inline const float kAttenuation = 0.02f;
-	static inline const float kLimitRunSpeed = 0.1f;
-	// 旋回時間<秒>
-	static inline const float kTimeTurn = 0.3f;
-	// 重力加速度（下方向）
-	static inline const float kGravityAcceleration = 0.05f;
-	// 最大落下速度（下方向）
-	static inline const float kLimitFallSpeed = 0.2f;
-	// ジャンプ初速（上方向）
-	static inline const float kJumpAcceleration = 0.5f;
-	// キャラクターの当たり判定サイズ
-	static inline const float kWidth = 0.8f;
-	static inline const float kHeight = 0.8f;
-	static inline const float kBlank = 0.02f;
-
-	// 着地時の速度減衰率
-	static inline const float kAttenuationLanding = 0.0f;
-	static inline const float kCollisionExtension = 0.05f;
-	// 着地時の速度減衰率
-	static inline const float kAttenuationWall = 0.3f;
-
 	// ワールド変換データ
 	WorldTransform worldTransform_;
 	// モデル
 	Model* model_ = nullptr;
-	// テクスチャハンドル
-	//uint32_t textureHandle_ = 0u;
-
+	// ビュープロジェクション
 	ViewProjection* viewProjection_ = nullptr;
 
 	// 速度
