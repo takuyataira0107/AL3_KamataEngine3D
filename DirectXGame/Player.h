@@ -1,8 +1,10 @@
 #pragma once
 #include "Model.h"
 #include "WorldTransform.h"
+#include "MathUtilityForText.h"
 
 class MapChipField;
+class Enemy;
 
 enum class LRDirection {
 	kRight,
@@ -117,10 +119,19 @@ public:
 	float fLerp(float start, float end, float t) { return (1.0f - t) * start + t * end; }
 	float easeInOutCubic(float x) { return x < 0.5 ? 4 * x * x * x : 1 - powf(-2 * x + 2, 3) / 2; }
 
+	/// <summary>
+	/// 衝突判定
+	/// </summary>
+	void OnCollision(const Enemy* enemy);
+
 	const WorldTransform& GetWorldTransform() const { return worldTransform_; }
 	const Vector3& GetVelocity() const { return velocity_; }
 	const Vector3& GetPlayerPosition() const { return worldTransform_.translation_; }
 	void SetMapChipField(MapChipField* mapChipField) { mapChipField_ = mapChipField; }
+	// ワールド座標を取得
+	Vector3 GetWorldPosition();
+	// AABBを取得
+	AABB GetAABB();
 
 private:
 	// ワールド変換データ

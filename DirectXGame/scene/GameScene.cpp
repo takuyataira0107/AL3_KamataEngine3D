@@ -20,7 +20,10 @@ GameScene::~GameScene() {
 	delete mapChipField_;
 	delete player_;
 	delete modelPlayer_;
-	delete enemy_;
+	for (Enemy* enemy : enemies_) {
+		delete enemy;
+	}
+	enemies_.clear();
 	delete modelEnemy_;
 	delete cameraController_;
 }
@@ -63,13 +66,18 @@ void GameScene::Initialize() {
 	player_->Initialize(modelPlayer_, &viewProjection_, playerPosition);
 	player_->SetMapChipField(mapChipField_);
 
-	// 敵キャラの座標
-	Vector3 enemyPosition = mapChipField_->GetMapChipPositionByIndex(16, 18);
-	// 敵キャラの生成
-	enemy_ = new Enemy();
 	modelEnemy_ = Model::CreateFromOBJ("enemy", true);
-	// 敵キャラの初期化
-	enemy_->Initialize(modelEnemy_, &viewProjection_, enemyPosition);
+	for (int32_t i = 0; i < 3; ++i) {
+		// 敵キャラの生成
+		Enemy* newEnemy = new Enemy();
+		// 敵キャラの座標
+		Vector3 enemyPosition = mapChipField_->GetMapChipPositionByIndex(16 + 2 * i, 18);
+		// 敵キャラの初期化
+		newEnemy->Initialize(modelEnemy_, &viewProjection_, enemyPosition);
+
+		// 追加
+		enemies_.push_back(newEnemy);
+	}
 
 	// カメラの生成
 	cameraController_ = new CameraController();
@@ -121,10 +129,15 @@ void GameScene::Update() {
 	player_->Update();
 
 	// 敵キャラの更新
-	enemy_->Update();
+	for (Enemy* enemy : enemies_) {
+		enemy->Update();
+	}
 
 	// カメラを更新
 	cameraController_->Update();
+
+	// 全ての当たり判定を行う
+	CheckAllCollisions();
 }
 
 void GameScene::Draw() {
@@ -170,7 +183,9 @@ void GameScene::Draw() {
 	player_->Draw();
 
 	// 敵キャラの描画
-	enemy_->Draw();
+	for (Enemy* enemy : enemies_) {
+		enemy->Draw();
+	}
 
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();
@@ -214,4 +229,31 @@ void GameScene::GenerateBlocks() {
 			}
 		}
 	}
+}
+
+// 全ての当たり判定を行う
+void GameScene::CheckAllCollisions() {
+	#pragma region 自キャラと敵キャラの当たり判定
+	{
+		// 判定対象1と2の座標
+		AABB aabb1, aabb2;
+
+		// 自キャラの座標
+		aabb1 = player_->GetAABB();
+
+		// 自キャラと敵弾全ての当たり判定
+		for (Enemy* enemy : enemies_) {
+			// 敵弾の座標
+			aabb2 = enemy->GetAABB();
+
+			// AABB同士の交差判定
+			if (isCollisionAABB(aabb1, aabb2)) {
+				// 自キャラの衝突時コールバックを呼び出す
+				player_->OnCollision(enemy);
+				// 敵弾の衝突時コールバックを呼び出す
+				enemy->OnCollision(player_);
+			}
+		}
+	}
+	#pragma endregion
 }

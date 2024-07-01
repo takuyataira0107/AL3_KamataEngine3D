@@ -47,7 +47,14 @@ public: // メンバ関数
 	/// </summary>
 	void Draw();
 
+	/// <summary>
+	/// ブロック生成
+	/// </summary>
 	void GenerateBlocks();
+
+	// 全ての当たり判定を行う
+	void CheckAllCollisions();
+
 
 private: // メンバ変数
 	DirectXCommon* dxCommon_ = nullptr;
@@ -57,10 +64,6 @@ private: // メンバ変数
 	/// <summary>
 	/// ゲームシーン用
 	/// </summary>
-	
-	uint32_t textureHandle_;
-	Model* modelBlock_ = nullptr;
-	std::vector<std::vector<WorldTransform*>> worldTransformBlocks_;
 
 	// ワールドトランスフォーム
 	WorldTransform worldTransform_;
@@ -75,6 +78,10 @@ private: // メンバ変数
 	Skydome* skydome_ = nullptr;
 	Model* modelSkydome_ = nullptr;
 
+	// ブロック
+	std::vector<std::vector<WorldTransform*>> worldTransformBlocks_;
+	Model* modelBlock_ = nullptr;
+
 	// マップチップフィールド
 	MapChipField* mapChipField_;
 
@@ -83,7 +90,8 @@ private: // メンバ変数
 	Model* modelPlayer_ = nullptr;
 
 	// 敵キャラ
-	Enemy* enemy_ = nullptr;
+	//Enemy* enemy_ = nullptr;
+	std::list<Enemy*> enemies_;
 	Model* modelEnemy_ = nullptr;
 
 	// カメラコントローラ

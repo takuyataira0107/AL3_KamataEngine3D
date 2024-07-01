@@ -3,6 +3,9 @@
 #include <Model.h>
 #include <ViewProjection.h>
 #include <numbers>
+#include "MathUtilityForText.h"
+
+class Player;
 
 /// <summary>
 /// 敵
@@ -17,6 +20,9 @@ public:
 	static inline const float kWalkMotionAngleEnd = 1.0f;
 	// アニメーションの周期となる時間[秒]
 	static inline const float kWalkMotionTime = 1.0f;
+	// 敵キャラクターの当たり判定サイズ
+	static inline const float kWidth = 1.0f;
+	static inline const float kHeight = 1.0f;
 
 	/// <summary>
 	/// 初期化
@@ -37,6 +43,16 @@ public:
 	/// イージング関数
 	/// </summary>
 	float fLerp(float start, float end, float t) { return (1.0f - t) * start + t * end; }
+
+	/// <summary>
+	/// 衝突応答
+	/// </summary>
+	void OnCollision(const Player* player);
+
+	// ワールド座標を取得
+	Vector3 GetWorldPosition();
+	// AABBを取得
+	AABB GetAABB();
 
 private:
 	WorldTransform worldTransform_;
