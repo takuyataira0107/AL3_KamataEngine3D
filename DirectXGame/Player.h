@@ -1,6 +1,7 @@
 #pragma once
 #include "Model.h"
 #include "WorldTransform.h"
+#include "ViewProjection.h"
 #include "MathUtilityForText.h"
 
 class MapChipField;

@@ -15,6 +15,7 @@
 #include "MapChipField.h"
 #include "CameraController.h"
 #include "Enemy.h"
+#include "DeathParticles.h"
 
 /// <summary>
 /// ゲームシーン
@@ -88,6 +89,11 @@ private: // メンバ変数
 	// 自キャラ
 	Player* player_ = nullptr;
 	Model* modelPlayer_ = nullptr;
+
+	// パーティクル
+	DeathParticles* deathParticles_ = nullptr;
+	Model* modelDeathParticles_ = nullptr;
+	bool isDeathParticles_ = true;
 
 	// 敵キャラ
 	//Enemy* enemy_ = nullptr;

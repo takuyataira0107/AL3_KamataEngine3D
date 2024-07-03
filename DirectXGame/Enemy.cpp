@@ -24,9 +24,6 @@ void Enemy::Initialize(Model* model, ViewProjection* viewProjection, const Vecto
 }
 
 void Enemy::Update() { 
-	// 行列を定数バッファに転送
-	worldTransform_.TransferMatrix();
-
 	// 移動
 	worldTransform_.translation_ += velocity_;
 
@@ -38,6 +35,8 @@ void Enemy::Update() {
 	float radian = kWalkMotionAngleStart + kWalkMotionAngleEnd * (param + 1.0f) / 2.0f;
 	worldTransform_.rotation_.x = fLerp(kWalkMotionAngleStart, kWalkMotionAngleEnd, radian);
 
+	// 行列を定数バッファに転送
+	worldTransform_.TransferMatrix();
 	// 行列計算
 	worldTransform_.UpdateMatrix();
 }

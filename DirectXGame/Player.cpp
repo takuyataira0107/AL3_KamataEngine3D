@@ -352,9 +352,6 @@ void Player::TurningControl() {
 }
 
 void Player::Update() {
-	// 行列を定数バッファに転送
-	worldTransform_.TransferMatrix();
-
 	//移動入力
 	InputMove();
 
@@ -381,6 +378,8 @@ void Player::Update() {
 	// 旋回制御
 	TurningControl();
 
+	// 行列を定数バッファに転送
+	worldTransform_.TransferMatrix();
 	// 行列計算
 	worldTransform_.UpdateMatrix();
 }
