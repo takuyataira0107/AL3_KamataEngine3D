@@ -136,9 +136,7 @@ void GameScene::Update() {
 	player_->Update();
 
 	// パーティクルの更新
-	if (isDeathParticles_) {
-		deathParticles_->Update();
-	}
+	deathParticles_->Update();
 
 	// 敵キャラの更新
 	for (Enemy* enemy : enemies_) {
@@ -195,9 +193,7 @@ void GameScene::Draw() {
 	player_->Draw();
 
 	// パーティクルの描画
-	if (isDeathParticles_) {
-		deathParticles_->Draw();
-	}
+	deathParticles_->Draw();
 
 	// 敵キャラの描画
 	for (Enemy* enemy : enemies_) {

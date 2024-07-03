@@ -93,7 +93,6 @@ private: // メンバ変数
 	// パーティクル
 	DeathParticles* deathParticles_ = nullptr;
 	Model* modelDeathParticles_ = nullptr;
-	bool isDeathParticles_ = true;
 
 	// 敵キャラ
 	//Enemy* enemy_ = nullptr;
