@@ -18,7 +18,6 @@ enum class Scene {
 	kGame,
 };
 
-
 // タイトルシーン
 TitleScene* titleScene = nullptr;
 // ゲームシーン
