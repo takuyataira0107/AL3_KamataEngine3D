@@ -345,7 +345,6 @@ void GameScene::CheckAllCollisions() {
 
 // フェーズの切り替え
 void GameScene::ChangePhase() { 
-
 	switch (phase_) {
 	case Phase::kPlay:
 		// ゲームプレイフェーズの処理
@@ -363,5 +362,4 @@ void GameScene::ChangePhase() {
 		// デス演出フェーズの処理
 		break;
 	} 
-
 }
