@@ -37,6 +37,9 @@ public:
 	/// </summary>
 	void Draw();
 
+	// デスフラグの getter
+	bool IsFinished() const { return isFinished_; }
+
 private:
 	Model* model_ = nullptr;
 	ViewProjection* viewProjection_ = nullptr;

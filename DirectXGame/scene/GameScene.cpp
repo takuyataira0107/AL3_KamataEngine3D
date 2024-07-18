@@ -40,6 +40,9 @@ void GameScene::Initialize() {
 	// ビュープロジェクションの初期化
 	viewProjection_.Initialize();
 	
+	// ゲームプレイフェーズから開始
+	phase_ = Phase::kPlay;
+
 	// デバッグカメラの生成
 	debugCamera_ = new DebugCamera(WinApp::kWindowWidth, WinApp::kWindowHeight);
 
@@ -70,9 +73,7 @@ void GameScene::Initialize() {
 	// 仮の生成処理。後で消す。
 	deathParticles_ = new DeathParticles;
 	modelDeathParticles_ = Model::CreateFromOBJ("deathParticle", true);
-	// パーティクルの初期化
-	deathParticles_->Initialize(modelDeathParticles_, &viewProjection_, playerPosition);
-
+	
 	// 敵キャラの生成
 	modelEnemy_ = Model::CreateFromOBJ("enemy", true);
 	for (int32_t i = 0; i < 3; ++i) {
@@ -100,54 +101,100 @@ void GameScene::Initialize() {
 
 void GameScene::Update() { 
 
-	// デバッグカメラを更新
-	debugCamera_->Update();
-#ifdef _DEBUG
-	// カメラモード切り替え
-	if (input_->TriggerKey(DIK_SPACE)) {
-		isDebugCameraActive_ = true;
-	}
-#endif
-	if (isDebugCameraActive_) {
-		debugCamera_->Update();
-		viewProjection_.matView = debugCamera_->GetViewProjection().matView;
-		viewProjection_.matProjection = debugCamera_->GetViewProjection().matProjection;
-		viewProjection_.TransferMatrix();
-	} else {
-		viewProjection_.matView = cameraController_->GetViewProjection().matView;
-		viewProjection_.matProjection = cameraController_->GetViewProjection().matProjection;
-		// ビュープロジェクション行列の転送
-		viewProjection_.TransferMatrix();
-	}
+	switch (phase_) {
+	case Phase::kPlay:
+		// ゲームプレイフェーズの処理
+		// 天球の更新
+		skydome_->Update();
 
-	// skydomeの更新
-	skydome_->Update();
+		// 自キャラの更新
+		player_->Update();
 
-	// ブロックの更新
-	for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_) {
-		for (WorldTransform* worldTransformBlock : worldTransformBlockLine) {
-			if (!worldTransformBlock)
-				continue;
-			worldTransformBlock->UpdateMatrix();
+		// 敵キャラの更新
+		for (Enemy* enemy : enemies_) {
+			enemy->Update();
 		}
+
+			// デバッグカメラを更新
+		debugCamera_->Update();
+
+		if (player_->IsDead()) {
+			// 死亡演出フェーズに切り替え
+			phase_ = Phase::kDeath;
+			// 自キャラの座標を取得
+			const Vector3& deathParticlesPosition = player_->GetWorldPosition();
+
+			// パーティクルの初期化
+			deathParticles_->Initialize(modelDeathParticles_, &viewProjection_, deathParticlesPosition);
+
+		}
+
+#ifdef _DEBUG
+		// カメラモード切り替え
+		if (input_->TriggerKey(DIK_SPACE)) {
+			isDebugCameraActive_ = true;
+		}
+#endif
+		if (isDebugCameraActive_) {
+			debugCamera_->Update();
+			viewProjection_.matView = debugCamera_->GetViewProjection().matView;
+			viewProjection_.matProjection = debugCamera_->GetViewProjection().matProjection;
+			viewProjection_.TransferMatrix();
+		} else {
+			viewProjection_.matView = cameraController_->GetViewProjection().matView;
+			viewProjection_.matProjection = cameraController_->GetViewProjection().matProjection;
+			// ビュープロジェクション行列の転送
+			viewProjection_.TransferMatrix();
+		}
+
+		// カメラを更新
+		cameraController_->Update();
+
+		// ブロックの更新
+		for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_) {
+			for (WorldTransform* worldTransformBlock : worldTransformBlockLine) {
+				if (!worldTransformBlock)
+					continue;
+				worldTransformBlock->UpdateMatrix();
+			}
+		}
+
+		// 全ての当たり判定を行う
+		CheckAllCollisions();
+
+		break;
+	case Phase::kDeath:
+		// デス演出フェーズの処理
+		// 天球の更新
+		skydome_->Update();
+
+		// 敵キャラの更新
+		for (Enemy* enemy : enemies_) {
+			enemy->Update();
+		}
+
+		// パーティクルの更新
+		deathParticles_->Update();
+
+		// カメラを更新
+		cameraController_->Update();
+
+		// ブロックの更新
+		for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_) {
+			for (WorldTransform* worldTransformBlock : worldTransformBlockLine) {
+				if (!worldTransformBlock)
+					continue;
+				worldTransformBlock->UpdateMatrix();
+			}
+		}
+
+		// ゲームシーンの終了条件
+		if (deathParticles_ && deathParticles_->IsFinished()) {
+			finished_ = true;
+		}
+
+		break;
 	}
-
-	// 自キャラの更新
-	player_->Update();
-
-	// パーティクルの更新
-	deathParticles_->Update();
-
-	// 敵キャラの更新
-	for (Enemy* enemy : enemies_) {
-		enemy->Update();
-	}
-
-	// カメラを更新
-	cameraController_->Update();
-
-	// 全ての当たり判定を行う
-	CheckAllCollisions();
 }
 
 void GameScene::Draw() {
@@ -177,27 +224,52 @@ void GameScene::Draw() {
 	/// ここに3Dオブジェクトの描画処理を追加できる
 	/// </summary>
 
-	// skydomeの描画
-	skydome_->Draw();
+	switch (phase_) {
+	case Phase::kPlay:
+		// ゲームプレイフェーズの処理
+		// 天球の描画
+		skydome_->Draw();
 
-	// ブロックの描画
-	for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_) {
-		for (WorldTransform* worldTransformBlock : worldTransformBlockLine) {
-			if (!worldTransformBlock)
-				continue;
-			modelBlock_->Draw(*worldTransformBlock, viewProjection_);
+		// 自キャラの描画
+		player_->Draw();
+
+		// 敵キャラの描画
+		for (Enemy* enemy : enemies_) {
+			enemy->Draw();
 		}
-	}
 
-	// 自キャラの描画
-	player_->Draw();
+		// ブロックの描画
+		for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_) {
+			for (WorldTransform* worldTransformBlock : worldTransformBlockLine) {
+				if (!worldTransformBlock)
+					continue;
+				modelBlock_->Draw(*worldTransformBlock, viewProjection_);
+			}
+		}
 
-	// パーティクルの描画
-	deathParticles_->Draw();
+		break;
+	case Phase::kDeath:
+		// デス演出フェーズの処理
+		// 天球の描画
+		skydome_->Draw();
 
-	// 敵キャラの描画
-	for (Enemy* enemy : enemies_) {
-		enemy->Draw();
+		// 敵キャラの描画
+		for (Enemy* enemy : enemies_) {
+			enemy->Draw();
+		}
+
+		// パーティクルの描画
+		deathParticles_->Draw();
+
+		// ブロックの描画
+		for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_) {
+			for (WorldTransform* worldTransformBlock : worldTransformBlockLine) {
+				if (!worldTransformBlock)
+					continue;
+				modelBlock_->Draw(*worldTransformBlock, viewProjection_);
+			}
+		}
+		break;
 	}
 
 	// 3Dオブジェクト描画後処理
@@ -269,4 +341,27 @@ void GameScene::CheckAllCollisions() {
 		}
 	}
 	#pragma endregion
+}
+
+// フェーズの切り替え
+void GameScene::ChangePhase() { 
+
+	switch (phase_) {
+	case Phase::kPlay:
+		// ゲームプレイフェーズの処理
+		if (player_->IsDead()) {
+			// 死亡演出フェーズに切り替え
+			phase_ = Phase::kDeath;
+			// 自キャラの座標を取得
+			const Vector3& deathParticlesPosition = player_->GetWorldPosition();
+
+			// パーティクルの初期化
+			deathParticles_->Initialize(modelDeathParticles_, &viewProjection_, deathParticlesPosition);
+		}
+		break;
+	case Phase::kDeath:
+		// デス演出フェーズの処理
+		break;
+	} 
+
 }

@@ -390,9 +390,9 @@ void Player::Draw() {
 }
 
 void Player::OnCollision(const Enemy* enemy) {
-	(void)enemy; 
-	// ジャンプ開始（仮処理）
-	velocity_ += Vector3(0.0f, 1.0f, 0.0f);
+	(void)enemy;
+	// デスフラグのgetter
+	isDead_ = true;
 }
 
 // ワールド座標を取得

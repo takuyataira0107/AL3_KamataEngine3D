@@ -134,6 +134,9 @@ public:
 	// AABBを取得
 	AABB GetAABB();
 
+	// デスフラグのgetter
+	bool IsDead() const { return isDead_; }
+
 private:
 	// ワールド変換データ
 	WorldTransform worldTransform_;
@@ -157,4 +160,7 @@ private:
 
 	// マップチップによるフィールド
 	MapChipField* mapChipField_ = nullptr;
+
+	// デスフラグ
+	bool isDead_ = false;
 };

@@ -17,6 +17,12 @@
 #include "Enemy.h"
 #include "DeathParticles.h"
 
+// ゲームのフェーズ（型）
+enum class Phase {
+	kPlay,   // ゲームプレイ
+	kDeath,  // デス演出
+};
+
 /// <summary>
 /// ゲームシーン
 /// </summary>
@@ -56,6 +62,13 @@ public: // メンバ関数
 	// 全ての当たり判定を行う
 	void CheckAllCollisions();
 
+	/// <summary>
+	/// フェーズの切り替え
+	/// </summary>
+	void ChangePhase();
+
+	// デスフラグの getter
+	bool IsFinished() const { return finished_; }
 
 private: // メンバ変数
 	DirectXCommon* dxCommon_ = nullptr;
@@ -71,11 +84,14 @@ private: // メンバ変数
 	// ビュープロジェクション
 	ViewProjection viewProjection_;
 
+	// ゲームの現在のフェーズ
+	Phase phase_;
+
 	// デバッグカメラ
 	bool isDebugCameraActive_ = false;
 	DebugCamera* debugCamera_ = nullptr;
 
-	// skydome
+	// 天球
 	Skydome* skydome_ = nullptr;
 	Model* modelSkydome_ = nullptr;
 
@@ -95,11 +111,13 @@ private: // メンバ変数
 	Model* modelDeathParticles_ = nullptr;
 
 	// 敵キャラ
-	//Enemy* enemy_ = nullptr;
 	std::list<Enemy*> enemies_;
 	Model* modelEnemy_ = nullptr;
 
 	// カメラコントローラ
 	CameraController* cameraController_ = nullptr;
 	CameraController::Rect cameraArea = {12.0f, 100 - 12.0f, 6.0f, 6.0f};
+
+	// 終了フラグ
+	bool finished_ = false;
 };
