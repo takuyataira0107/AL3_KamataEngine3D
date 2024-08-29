@@ -160,7 +160,7 @@ void GameScene::Update() {
 		}
 
 		// 全ての当たり判定を行う
-		CheckAllCollisions();
+		CheckAllCollisions(); 
 
 		break;
 	case Phase::kDeath:
