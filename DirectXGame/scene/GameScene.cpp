@@ -160,7 +160,7 @@ void GameScene::Update() {
 		}
 
 		// 全ての当たり判定を行う
-		CheckAllCollisions();
+		//CheckAllCollisions();
 
 		break;
 	case Phase::kDeath:
@@ -234,9 +234,10 @@ void GameScene::Draw() {
 		player_->Draw();
 
 		// 敵キャラの描画
+		/*
 		for (Enemy* enemy : enemies_) {
 			enemy->Draw();
-		}
+		}*/
 
 		// ブロックの描画
 		for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_) {
@@ -254,9 +255,9 @@ void GameScene::Draw() {
 		skydome_->Draw();
 
 		// 敵キャラの描画
-		for (Enemy* enemy : enemies_) {
+		/* for (Enemy* enemy : enemies_) {
 			enemy->Draw();
-		}
+		}*/
 
 		// パーティクルの描画
 		deathParticles_->Draw();

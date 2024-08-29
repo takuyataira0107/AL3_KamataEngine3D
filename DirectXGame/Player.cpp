@@ -282,6 +282,49 @@ void Player::HitWallCase(const CollisionMapInfo& info) {
 	if (info.hitWall) {
 		velocity_.x *= (1.0f - kAttenuationWall);
 	}
+	if (!onGround_) {
+		if (info.hitWall) {
+			if (Input::GetInstance()->PushKey(DIK_RIGHT) || Input::GetInstance()->PushKey(DIK_LEFT)) {
+				// 左右加速
+				Vector3 acceleration = {};
+				if (Input::GetInstance()->PushKey(DIK_RIGHT)) {
+
+					acceleration.x += kAcceleration + 1;
+
+					if (lrDirection_ != LRDirection::kRight) {
+						lrDirection_ = LRDirection::kRight;
+						turnFirstRotationY_ = worldTransform_.rotation_.y;
+						turnTimer_ = kTimeTurn;
+					}
+
+				} else if (Input::GetInstance()->PushKey(DIK_LEFT)) {
+
+					acceleration.x -= kAcceleration + 1;
+
+					if (lrDirection_ != LRDirection::kLeft) {
+						lrDirection_ = LRDirection::kLeft;
+						turnFirstRotationY_ = worldTransform_.rotation_.y;
+						turnTimer_ = kTimeTurn;
+					}
+				}
+
+				if (Input::GetInstance()->PushKey(DIK_UP)) {
+					// ジャンプ初速
+					velocity_.y += kJumpAcceleration;
+				}
+				// 落下速度制限
+				velocity_.y = std::max(velocity_.y, kLimitFallSpeed);
+
+				// 加速/減速
+				velocity_ += acceleration;
+				// 最大速度制限
+				velocity_.x = std::clamp(velocity_.x, -kLimitRunSpeed, kLimitRunSpeed);
+			} else {
+				// 非入力時は移動減衰をかける
+				velocity_.x *= (1.0f - kAttenuation);
+			}
+		}
+	}
 }
 
 void Player::SwitchingOnGround(const CollisionMapInfo& info) {
