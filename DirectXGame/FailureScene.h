@@ -3,22 +3,19 @@
 #include "Input.h"
 #include <Model.h>
 #include <Sprite.h>
-#pragma once
 
-/// <summary>
-/// タイトルシーン
-/// </summary>
-class TitleScene {
+#pragma once
+class FailureScene {
 public:
 	/// <summary>
 	/// コンストクラタ
 	/// </summary>
-	TitleScene();
+	FailureScene();
 
 	/// <summary>
 	/// デストクラタ
 	/// </summary>
-	~TitleScene();
+	~FailureScene();
 
 	/// <summary>
 	/// 初期化
@@ -34,6 +31,7 @@ public:
 	/// 描画
 	/// </summary>
 	void Draw();
+
 
 	// デスフラグの getter
 	bool IsFinished() const { return finished_; }

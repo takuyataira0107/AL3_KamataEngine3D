@@ -19,8 +19,10 @@
 
 // ゲームのフェーズ（型）
 enum class Phase {
-	kPlay,   // ゲームプレイ
-	kDeath,  // デス演出
+	kPlay,     // ゲームプレイ
+	kDeath,    // デス演出
+//	kNext,	   // 次のステージ
+	kClear,    // ゲームクリア
 };
 
 /// <summary>

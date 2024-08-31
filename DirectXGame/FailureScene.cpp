@@ -1,12 +1,12 @@
-#include "TitleScene.h"
+#include "FailureScene.h"
 #include "TextureManager.h"
 #include <Input.h>
 
-TitleScene::TitleScene() {}
+FailureScene::FailureScene(){}
 
-TitleScene::~TitleScene() { delete sprite_; }
+FailureScene::~FailureScene() { delete sprite_; }
 
-void TitleScene::Initialize() {
+void FailureScene::Initialize() {
 	dxCommon_ = DirectXCommon::GetInstance();
 	input_ = Input::GetInstance();
 	audio_ = Audio::GetInstance();
@@ -15,13 +15,13 @@ void TitleScene::Initialize() {
 	sprite_ = Sprite::Create(textureHandle_, {100, 50});
 }
 
-void TitleScene::Update() {
-	if (Input::GetInstance()->PushKey(DIK_SPACE)) {
+void FailureScene::Update() {
+	if (Input::GetInstance()->PushKey(DIK_R)) {
 		finished_ = true;
 	}
 }
 
-void TitleScene::Draw() {
+void FailureScene::Draw() {
 	// コマンドリストの取得
 	ID3D12GraphicsCommandList* commandList = dxCommon_->GetCommandList();
 
@@ -33,7 +33,7 @@ void TitleScene::Draw() {
 	/// ここに背景スプライトの描画処理を追加できる
 	/// </summary>
 
-//	sprite_->Draw();
+	sprite_->Draw();
 
 	// スプライト描画後処理
 	Sprite::PostDraw();

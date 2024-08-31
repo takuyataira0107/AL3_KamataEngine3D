@@ -8,6 +8,7 @@
 #include "WinApp.h"
 
 #include "TitleScene.h"
+#include "FailureScene.h"
 
 // シーン（型）
 enum class Scene {
@@ -16,12 +17,16 @@ enum class Scene {
 
 	kTitle,
 	kGame,
+	kFailure,
 };
 
 // タイトルシーン
 TitleScene* titleScene = nullptr;
 // ゲームシーン
 GameScene* gameScene = nullptr;
+// ゲームオーバーシーン
+FailureScene* failureScene = nullptr;
+
 // 現在シーン（型）
 Scene scene = Scene::kUnknown;
 
@@ -87,6 +92,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	gameScene = new GameScene();
 	gameScene->Initialize();
 
+	// ゲームオーバーシーンの初期化
+	failureScene = new FailureScene();
+	failureScene->Initialize();
+
 	// メインループ
 	while (true) {
 		// メッセージ処理
@@ -128,6 +137,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	// 各種解放
 	delete titleScene;
 	delete gameScene;
+	delete failureScene;
 	// 3Dモデル解放
 	Model::StaticFinalize();
 	audio->Finalize();
@@ -157,17 +167,28 @@ void ChangeScene() {
 	case Scene::kGame:
 		if (gameScene->IsFinished()) {
 			// シーン変更
-			scene = Scene::kTitle;
+			scene = Scene::kFailure;
 			// 旧シーンの解放
 			delete gameScene;
 			gameScene = nullptr;
+			// 新シーンの生成と初期化
+			failureScene = new FailureScene;
+			failureScene->Initialize();
+		}
+		break;
+	case Scene::kFailure:
+		if (failureScene->IsFinished()) {
+			// シーン変更
+			scene = Scene::kTitle;
+			// 旧シーンの解放
+			delete failureScene;
+			failureScene = nullptr;
 			// 新シーンの生成と初期化
 			titleScene = new TitleScene;
 			titleScene->Initialize();
 		}
 		break;
 	}
-
 }
 
 void UpdateScene() {
@@ -177,6 +198,9 @@ void UpdateScene() {
 		break;
 	case Scene::kGame:
 		gameScene->Update();
+		break;
+	case Scene::kFailure:
+		failureScene->Update();
 		break;
 	}
 }
@@ -188,6 +212,9 @@ void DrawScene() {
 		break;
 	case Scene::kGame:
 		gameScene->Draw();
+		break;
+	case Scene::kFailure:
+		failureScene->Draw();
 		break;
 	}
 }

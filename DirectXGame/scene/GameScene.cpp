@@ -160,7 +160,7 @@ void GameScene::Update() {
 		}
 
 		// 全ての当たり判定を行う
-		CheckAllCollisions(); 
+		CheckAllCollisions();
 
 		break;
 	case Phase::kDeath:
@@ -193,6 +193,11 @@ void GameScene::Update() {
 			finished_ = true;
 		}
 
+		break;
+//	case Phase::kNext:
+//		break;
+
+	case Phase::kClear:
 		break;
 	}
 }
