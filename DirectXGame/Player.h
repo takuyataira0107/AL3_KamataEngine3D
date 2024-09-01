@@ -100,6 +100,11 @@ public:
 	void HitWallCase(const CollisionMapInfo& info);
 
 	/// <summary>
+	/// 壁ジャンプ
+	/// </summary>
+	//void wallJump();
+
+	/// <summary>
 	/// 旋回制御
 	/// </summary>
 	void TurningControl();

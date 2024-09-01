@@ -360,6 +360,14 @@ void Player::SwitchingOnGround(const CollisionMapInfo& info) {
 	}
 }
 
+/*
+void Player::wallJump() {
+	// 接地状態
+	if (!onGround_) {
+
+	}
+}*/
+
 void Player::TurningControl() {
 	// 旋回制御
 	if (turnTimer_ > 0.0f) {

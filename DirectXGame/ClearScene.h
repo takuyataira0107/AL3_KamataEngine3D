@@ -3,6 +3,8 @@
 #include "Input.h"
 #include <Model.h>
 #include <Sprite.h>
+#include "Skydome.h"
+
 #pragma once
 class ClearScene {
 public:
@@ -39,8 +41,17 @@ private:
 	Input* input_ = nullptr;
 	Audio* audio_ = nullptr;
 
+	// ワールドトランスフォーム
+	WorldTransform worldTransform_;
+	// ビュープロジェクション
+	ViewProjection viewProjection_;
+
 	// 終了フラグ
 	bool finished_ = false;
+
+	// 天球
+	Skydome* skydome_ = nullptr;
+	Model* modelSkydome_ = nullptr;
 
 	uint32_t textureHandle_ = 0;
 	Sprite* sprite_ = nullptr;

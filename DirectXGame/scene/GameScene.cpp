@@ -85,15 +85,48 @@ void GameScene::Initialize() {
 	
 	// 敵キャラの生成
 	modelEnemy_ = Model::CreateFromOBJ("enemy", true);
-	for (int32_t i = 0; i < 3; ++i) {
+	for (int32_t i = 0; i < 4; ++i) {
 		Enemy* newEnemy = new Enemy();
+		Enemy* newEnemy2 = new Enemy();
+		Enemy* newEnemy3 = new Enemy();
+
+		Enemy* newEnemy4 = new Enemy();
+		Enemy* newEnemy5 = new Enemy();
+		Enemy* newEnemy6 = new Enemy();
+		Enemy* newEnemy7 = new Enemy();
+		Enemy* newEnemy8 = new Enemy();
+
 		// 敵キャラの座標
-		Vector3 enemyPosition = mapChipField_->GetMapChipPositionByIndex(16 + 2 * i, 18);
+		Vector3 enemyPosition = mapChipField_->GetMapChipPositionByIndex(20 + 2 * i, 18);
+		Vector3 enemyPosition2 = mapChipField_->GetMapChipPositionByIndex(45 + 2 * i, 17);
+		Vector3 enemyPosition3 = mapChipField_->GetMapChipPositionByIndex(45 + 2 * i, 18);
+
+		Vector3 enemyPosition4 = mapChipField_->GetMapChipPositionByIndex(70 + 2 * i, 12);
+		Vector3 enemyPosition5 = mapChipField_->GetMapChipPositionByIndex(73 + 2 * i, 13);
+
+		Vector3 enemyPosition6 = mapChipField_->GetMapChipPositionByIndex(70 + 2 * i, 17);
+		Vector3 enemyPosition7 = mapChipField_->GetMapChipPositionByIndex(73 + 2 * i, 18);
+		Vector3 enemyPosition8 = mapChipField_->GetMapChipPositionByIndex(76 + 2 * i, 14);
+
 		// 敵キャラの初期化
 		newEnemy->Initialize(modelEnemy_, &viewProjection_, enemyPosition);
+		newEnemy2->Initialize(modelEnemy_, &viewProjection_, enemyPosition2);
+		newEnemy3->Initialize(modelEnemy_, &viewProjection_, enemyPosition3);
+		newEnemy4->Initialize(modelEnemy_, &viewProjection_, enemyPosition4);
+		newEnemy5->Initialize(modelEnemy_, &viewProjection_, enemyPosition5);
+		newEnemy6->Initialize(modelEnemy_, &viewProjection_, enemyPosition6);
+		newEnemy7->Initialize(modelEnemy_, &viewProjection_, enemyPosition7);
+		newEnemy8->Initialize(modelEnemy_, &viewProjection_, enemyPosition8);
 
 		// 追加
 		enemies_.push_back(newEnemy);
+		enemies_.push_back(newEnemy2);
+		enemies_.push_back(newEnemy3);
+		enemies_.push_back(newEnemy4);
+		enemies_.push_back(newEnemy5);
+		enemies_.push_back(newEnemy6);
+		enemies_.push_back(newEnemy7);
+		enemies_.push_back(newEnemy8);
 	}
 
 	// カメラの生成

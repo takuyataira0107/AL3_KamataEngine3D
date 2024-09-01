@@ -4,18 +4,34 @@
 
 FailureScene::FailureScene(){}
 
-FailureScene::~FailureScene() { delete sprite_; }
+FailureScene::~FailureScene() {
+	delete skydome_;
+	delete modelSkydome_;
+	delete sprite_;
+}
 
 void FailureScene::Initialize() {
 	dxCommon_ = DirectXCommon::GetInstance();
 	input_ = Input::GetInstance();
 	audio_ = Audio::GetInstance();
 
-	textureHandle_ = TextureManager::Load("uvChecker.png");
+	// ワールドトランスフォームの初期化
+	worldTransform_.Initialize();
+	// ビュープロジェクションの初期化
+	viewProjection_.Initialize();
+
+	// 天球を生成
+	skydome_ = new Skydome();
+	modelSkydome_ = Model::CreateFromOBJ("skydome", true);
+	// 天球を初期化
+	skydome_->Initialize(modelSkydome_, &viewProjection_);
+
+	textureHandle_ = TextureManager::Load("alGameOver.png");
 	sprite_ = Sprite::Create(textureHandle_, {100, 50});
 }
 
 void FailureScene::Update() {
+	skydome_->Update();
 	if (Input::GetInstance()->PushKey(DIK_R)) {
 		finished_ = true;
 	}
@@ -33,8 +49,6 @@ void FailureScene::Draw() {
 	/// ここに背景スプライトの描画処理を追加できる
 	/// </summary>
 
-	sprite_->Draw();
-
 	// スプライト描画後処理
 	Sprite::PostDraw();
 	// 深度バッファクリア
@@ -48,7 +62,7 @@ void FailureScene::Draw() {
 	/// <summary>
 	/// ここに3Dオブジェクトの描画処理を追加できる
 	/// </summary>
-
+	skydome_->Draw();
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();
 #pragma endregion
@@ -60,6 +74,8 @@ void FailureScene::Draw() {
 	/// <summary>
 	/// ここに前景スプライトの描画処理を追加できる
 	/// </summary>
+
+	sprite_->Draw();
 
 	// スプライト描画後処理
 	Sprite::PostDraw();
