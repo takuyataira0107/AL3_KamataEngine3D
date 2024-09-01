@@ -116,11 +116,17 @@ void Player::MapCollisionTop(CollisionMapInfo& info) {
 	if (mapChipType == MapChipType::kBlock) {
 		hit = true;
 	}
+	if (mapChipType == MapChipType::kGoal) {
+		isClear_ = true;
+	}
 	// 右上点の判定
 	indexSet = mapChipField_->GetMapChipIndexSetByPosition(positionsNew[kRightTop]);
 	mapChipType = mapChipField_->GetMapChipTypeByIndex(indexSet.xIndex, indexSet.yIndex);
 	if (mapChipType == MapChipType::kBlock) {
 		hit = true;
+	}
+	if (mapChipType == MapChipType::kGoal) {
+		isClear_ = true;
 	}
 
 	// ブロックにヒット？
@@ -157,11 +163,17 @@ void Player::MapCollisionBottom(CollisionMapInfo& info) {
 	if (mapChipType == MapChipType::kBlock) {
 		hit = true;
 	}
+	if (mapChipType == MapChipType::kGoal) {
+		isClear_ = true;
+	}
 	// 右下点の判定
 	indexSet = mapChipField_->GetMapChipIndexSetByPosition(positionsNew[kRightBottom]);
 	mapChipType = mapChipField_->GetMapChipTypeByIndex(indexSet.xIndex, indexSet.yIndex);
 	if (mapChipType == MapChipType::kBlock) {
 		hit = true;
+	}
+	if (mapChipType == MapChipType::kGoal) {
+		isClear_ = true;
 	}
 
 	// ブロックにヒット
@@ -198,11 +210,17 @@ void Player::MapCollisionRight(CollisionMapInfo& info) {
 	if (mapChipType == MapChipType::kBlock) {
 		hit = true;
 	}
+	if (mapChipType == MapChipType::kGoal) {
+		isClear_ = true;
+	}
 	// 右下点の判定
 	indexSet = mapChipField_->GetMapChipIndexSetByPosition(positionsNew[kRightBottom] + Vector3(+kCollisionExtension, 0, 0));
 	mapChipType = mapChipField_->GetMapChipTypeByIndex(indexSet.xIndex, indexSet.yIndex);
 	if (mapChipType == MapChipType::kBlock) {
 		hit = true;
+	}
+	if (mapChipType == MapChipType::kGoal) {
+		isClear_ = true;
 	}
 
 	// ブロックにヒット？
@@ -238,11 +256,17 @@ void Player::MapCollisionLeft(CollisionMapInfo& info) {
 	if (mapChipType == MapChipType::kBlock) {
 		hit = true;
 	}
+	if (mapChipType == MapChipType::kGoal) {
+		isClear_ = true;
+	}
 	// 左下点の判定;
 	indexSet = mapChipField_->GetMapChipIndexSetByPosition(positionsNew[kLeftBottom] + Vector3(-kCollisionExtension, 0, 0));
 	mapChipType = mapChipField_->GetMapChipTypeByIndex(indexSet.xIndex, indexSet.yIndex);
 	if (mapChipType == MapChipType::kBlock) {
 		hit = true;
+	}
+	if (mapChipType == MapChipType::kGoal) {
+		isClear_ = true;
 	}
 
 	// ブロックにヒット？

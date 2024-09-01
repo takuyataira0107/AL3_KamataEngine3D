@@ -14,6 +14,13 @@ GameScene::~GameScene() {
 		}
 	}
 	worldTransformBlocks_.clear();
+	delete modelGoal_;
+	for (std::vector<WorldTransform*>& worldTransformGoalBlockLine : worldTransformGoalBlocks_) {
+		for (WorldTransform* worldTransformGoalBlock : worldTransformGoalBlockLine) {
+			delete worldTransformGoalBlock;
+		}
+	}
+	worldTransformGoalBlocks_.clear();
 	delete debugCamera_;
 	delete skydome_;
 	delete modelSkydome_;
@@ -54,6 +61,8 @@ void GameScene::Initialize() {
 
 	// ブロックの生成
 	modelBlock_ = Model::CreateFromOBJ("block", true);
+	// ゴールの生成
+	modelGoal_ = Model::CreateFromOBJ("goal", true);
 
 	// マップチップの生成
 	mapChipField_ = new MapChipField;
@@ -129,6 +138,11 @@ void GameScene::Update() {
 
 		}
 
+		if (player_->IsClear()) {
+			// クリア演出フェーズに切り替え
+			phase_ = Phase::kGoal;
+		}
+
 #ifdef _DEBUG
 		// カメラモード切り替え
 		if (input_->TriggerKey(DIK_SPACE)) {
@@ -156,6 +170,14 @@ void GameScene::Update() {
 				if (!worldTransformBlock)
 					continue;
 				worldTransformBlock->UpdateMatrix();
+			}
+		}
+
+		for (std::vector<WorldTransform*>& worldTransformGoalBlockLine : worldTransformGoalBlocks_) {
+			for (WorldTransform* worldTransformGoalBlock : worldTransformGoalBlockLine) {
+				if (!worldTransformGoalBlock)
+					continue;
+				worldTransformGoalBlock->UpdateMatrix();
 			}
 		}
 
@@ -188,6 +210,15 @@ void GameScene::Update() {
 			}
 		}
 
+		
+		for (std::vector<WorldTransform*>& worldTransformGoalBlockLine : worldTransformGoalBlocks_) {
+			for (WorldTransform* worldTransformGoalBlock : worldTransformGoalBlockLine) {
+				if (!worldTransformGoalBlock)
+					continue;
+				worldTransformGoalBlock->UpdateMatrix();
+			}
+		}
+
 		// ゲームシーンの終了条件
 		if (deathParticles_ && deathParticles_->IsFinished()) {
 			finished_ = true;
@@ -197,7 +228,33 @@ void GameScene::Update() {
 //	case Phase::kNext:
 //		break;
 
-	case Phase::kClear:
+	case Phase::kGoal:
+		// 天球の更新
+		skydome_->Update();
+
+		// カメラを更新
+		cameraController_->Update();
+
+		// ブロックの更新
+		for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_) {
+			for (WorldTransform* worldTransformBlock : worldTransformBlockLine) {
+				if (!worldTransformBlock)
+					continue;
+				worldTransformBlock->UpdateMatrix();
+			}
+		}
+
+		for (std::vector<WorldTransform*>& worldTransformGoalBlockLine : worldTransformGoalBlocks_) {
+			for (WorldTransform* worldTransformGoalBlock : worldTransformGoalBlockLine) {
+				if (!worldTransformGoalBlock)
+					continue;
+				worldTransformGoalBlock->UpdateMatrix();
+			}
+		}
+
+		// ゲームシーンの終了条件
+		goalFinished_ = true;
+
 		break;
 	}
 }
@@ -251,6 +308,13 @@ void GameScene::Draw() {
 				modelBlock_->Draw(*worldTransformBlock, viewProjection_);
 			}
 		}
+		for (std::vector<WorldTransform*>& worldTransformGoalBlockLine : worldTransformGoalBlocks_) {
+			for (WorldTransform* worldTransformGoalBlock : worldTransformGoalBlockLine) {
+				if (!worldTransformGoalBlock)
+					continue;
+				modelGoal_->Draw(*worldTransformGoalBlock, viewProjection_);
+			}
+		}
 
 		break;
 	case Phase::kDeath:
@@ -272,6 +336,42 @@ void GameScene::Draw() {
 				if (!worldTransformBlock)
 					continue;
 				modelBlock_->Draw(*worldTransformBlock, viewProjection_);
+			}
+		}
+
+		for (std::vector<WorldTransform*>& worldTransformGoalBlockLine : worldTransformGoalBlocks_) {
+			for (WorldTransform* worldTransformGoalBlock : worldTransformGoalBlockLine) {
+				if (!worldTransformGoalBlock)
+					continue;
+				modelGoal_->Draw(*worldTransformGoalBlock, viewProjection_);
+			}
+		}
+		break;
+	case Phase::kGoal:
+		// 天球の描画
+		skydome_->Draw();
+
+		// 自キャラの描画
+		player_->Draw();
+
+		// 敵キャラの描画
+		for (Enemy* enemy : enemies_) {
+			enemy->Draw();
+		}
+
+		// ブロックの描画
+		for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_) {
+			for (WorldTransform* worldTransformBlock : worldTransformBlockLine) {
+				if (!worldTransformBlock)
+					continue;
+				modelBlock_->Draw(*worldTransformBlock, viewProjection_);
+			}
+		}
+		for (std::vector<WorldTransform*>& worldTransformGoalBlockLine : worldTransformGoalBlocks_) {
+			for (WorldTransform* worldTransformGoalBlock : worldTransformGoalBlockLine) {
+				if (!worldTransformGoalBlock)
+					continue;
+				modelGoal_->Draw(*worldTransformGoalBlock, viewProjection_);
 			}
 		}
 		break;
@@ -316,6 +416,24 @@ void GameScene::GenerateBlocks() {
 				worldTransform->Initialize();
 				worldTransformBlocks_[i][j] = worldTransform;
 				worldTransformBlocks_[i][j]->translation_ = mapChipField_->GetMapChipPositionByIndex(j, i);
+			}
+		}
+	}
+
+	worldTransformGoalBlocks_.resize(numBlockVirtical);
+	for (uint32_t i = 0; i < numBlockVirtical; ++i) {
+		// 1列の要素数を設定（横方向のブロック数）
+		worldTransformGoalBlocks_[i].resize(numBlockHorizontal);
+	}
+
+	// ブロックの生成
+	for (uint32_t i = 0; i < numBlockVirtical; ++i) {
+		for (uint32_t j = 0; j < numBlockHorizontal; ++j) {
+			if (mapChipField_->GetMapChipTypeByIndex(j, i) == MapChipType::kGoal) {
+				WorldTransform* worldTransform = new WorldTransform();
+				worldTransform->Initialize();
+				worldTransformGoalBlocks_[i][j] = worldTransform;
+				worldTransformGoalBlocks_[i][j]->translation_ = mapChipField_->GetMapChipPositionByIndex(j, i);
 			}
 		}
 	}

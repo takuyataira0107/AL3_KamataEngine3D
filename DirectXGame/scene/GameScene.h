@@ -22,7 +22,7 @@ enum class Phase {
 	kPlay,     // ゲームプレイ
 	kDeath,    // デス演出
 //	kNext,	   // 次のステージ
-	kClear,    // ゲームクリア
+	kGoal,    // ゲームクリア
 };
 
 /// <summary>
@@ -72,6 +72,9 @@ public: // メンバ関数
 	// デスフラグの getter
 	bool IsFinished() const { return finished_; }
 
+	// ゴールフラグの getter
+	bool IsGoalFinished() const { return goalFinished_; }
+
 private: // メンバ変数
 	DirectXCommon* dxCommon_ = nullptr;
 	Input* input_ = nullptr;
@@ -101,6 +104,10 @@ private: // メンバ変数
 	std::vector<std::vector<WorldTransform*>> worldTransformBlocks_;
 	Model* modelBlock_ = nullptr;
 
+	// ゴールブロック
+	std::vector<std::vector<WorldTransform*>> worldTransformGoalBlocks_;
+	Model* modelGoal_ = nullptr;
+
 	// マップチップフィールド
 	MapChipField* mapChipField_;
 
@@ -122,4 +129,7 @@ private: // メンバ変数
 
 	// 終了フラグ
 	bool finished_ = false;
+
+	// ゴール終了フラグ
+	bool goalFinished_ = false;
 };

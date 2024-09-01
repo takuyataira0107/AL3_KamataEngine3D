@@ -137,6 +137,9 @@ public:
 	// デスフラグのgetter
 	bool IsDead() const { return isDead_; }
 
+	// クリアフラグのgetter
+	bool IsClear() const { return isClear_; }
+
 private:
 	// ワールド変換データ
 	WorldTransform worldTransform_;
@@ -163,4 +166,7 @@ private:
 
 	// デスフラグ
 	bool isDead_ = false;
+
+	// クリアフラグ
+	bool isClear_ = false;
 };

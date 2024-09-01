@@ -9,6 +9,7 @@
 
 #include "TitleScene.h"
 #include "FailureScene.h"
+#include "ClearScene.h"
 
 // シーン（型）
 enum class Scene {
@@ -18,6 +19,7 @@ enum class Scene {
 	kTitle,
 	kGame,
 	kFailure,
+	kClear,
 };
 
 // タイトルシーン
@@ -26,6 +28,8 @@ TitleScene* titleScene = nullptr;
 GameScene* gameScene = nullptr;
 // ゲームオーバーシーン
 FailureScene* failureScene = nullptr;
+// ゲームクリアシーン
+ClearScene* clearScene = nullptr;
 
 // 現在シーン（型）
 Scene scene = Scene::kUnknown;
@@ -96,6 +100,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	failureScene = new FailureScene();
 	failureScene->Initialize();
 
+	// ゲームクリアシーンの初期化
+	clearScene = new ClearScene();
+	clearScene->Initialize();
+
 	// メインループ
 	while (true) {
 		// メッセージ処理
@@ -138,6 +146,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	delete titleScene;
 	delete gameScene;
 	delete failureScene;
+	delete clearScene;
 	// 3Dモデル解放
 	Model::StaticFinalize();
 	audio->Finalize();
@@ -175,6 +184,16 @@ void ChangeScene() {
 			failureScene = new FailureScene;
 			failureScene->Initialize();
 		}
+		else if (gameScene->IsGoalFinished()) {
+			// シーン変更
+			scene = Scene::kClear;
+			// 旧シーンの解放
+			delete gameScene;
+			gameScene = nullptr;
+			// 新シーンの生成と初期化
+			clearScene = new ClearScene;
+			clearScene->Initialize();
+		}
 		break;
 	case Scene::kFailure:
 		if (failureScene->IsFinished()) {
@@ -188,6 +207,17 @@ void ChangeScene() {
 			titleScene->Initialize();
 		}
 		break;
+	case Scene::kClear:
+		if (clearScene->IsFinished()) {
+			// シーン変更
+			scene = Scene::kTitle;
+			// 旧シーンの解放
+			delete clearScene;
+			clearScene = nullptr;
+			// 新シーンの生成と初期化
+			titleScene = new TitleScene;
+			titleScene->Initialize();
+		}
 	}
 }
 
@@ -202,6 +232,9 @@ void UpdateScene() {
 	case Scene::kFailure:
 		failureScene->Update();
 		break;
+	case Scene::kClear:
+		clearScene->Update();
+		break;
 	}
 }
 
@@ -215,6 +248,9 @@ void DrawScene() {
 		break;
 	case Scene::kFailure:
 		failureScene->Draw();
+		break;
+	case Scene::kClear:
+		clearScene->Draw();
 		break;
 	}
 }
