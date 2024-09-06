@@ -41,8 +41,8 @@ void Player::InputMove() {
 
 				acceleration.x += kAcceleration;
 
-				if (lrDirection_ != LRDirection::kRight) {
-					lrDirection_ = LRDirection::kRight;
+				if (lrDirection_ != Direction::kRight) {
+					lrDirection_ = Direction::kRight;
 					turnFirstRotationY_ = worldTransform_.rotation_.y;
 					turnTimer_ = kTimeTurn;
 				}
@@ -56,8 +56,8 @@ void Player::InputMove() {
 
 				acceleration.x -= kAcceleration;
 
-				if (lrDirection_ != LRDirection::kLeft) {
-					lrDirection_ = LRDirection::kLeft;
+				if (lrDirection_ != Direction::kLeft) {
+					lrDirection_ = Direction::kLeft;
 					turnFirstRotationY_ = worldTransform_.rotation_.y;
 					turnTimer_ = kTimeTurn;
 				}
@@ -72,7 +72,51 @@ void Player::InputMove() {
 			velocity_.x *= (1.0f - kAttenuation);
 		}
 
-		if (Input::GetInstance()->PushKey(DIK_UP)) {
+
+		if (Input::GetInstance()->PushKey(DIK_UP) || Input::GetInstance()->PushKey(DIK_DOWN)) {
+			// 左右加速
+			Vector3 acceleration = {};
+			if (Input::GetInstance()->PushKey(DIK_UP)) {
+				//	左移動中の右入力
+				if (velocity_.z < 0.0f) {
+					// 速度と逆方向に入力中は急ブレーキ
+					velocity_.z *= (1.0f - kAttenuation);
+				}
+
+				acceleration.z += kAcceleration;
+
+				if (lrDirection_ != Direction::kBackward) {
+					lrDirection_ = Direction::kBackward;
+					turnFirstRotationY_ = worldTransform_.rotation_.y;
+					turnTimer_ = kTimeTurn;
+				}
+
+			} else if (Input::GetInstance()->PushKey(DIK_DOWN)) {
+				// 左移動中の左入力
+				if (velocity_.z > 0.0f) {
+					//	速度と逆方向に入力中は急ブレーキ
+					velocity_.z *= (1.0f - kAttenuation);
+				}
+
+				acceleration.z -= kAcceleration;
+
+				if (lrDirection_ != Direction::kForward) {
+					lrDirection_ = Direction::kForward;
+					turnFirstRotationY_ = worldTransform_.rotation_.y;
+					turnTimer_ = kTimeTurn;
+				}
+			}
+
+			// 加速/減速
+			velocity_ += acceleration;
+			// 最大速度制限
+			velocity_.z = std::clamp(velocity_.z, -kLimitRunSpeed, kLimitRunSpeed);
+		} else {
+			// 非入力時は移動減衰をかける
+			velocity_.z *= (1.0f - kAttenuation);
+		}
+
+		if (Input::GetInstance()->PushKey(DIK_SPACE)) {
 			// ジャンプ初速
 			velocity_.y += kJumpAcceleration;
 		}
@@ -375,7 +419,7 @@ void Player::TurningControl() {
 			turnTimer_ += 1.0f / 60.0f;
 		}
 		// 左右の自キャラ角度テーブル
-		float destinationRotationYTable[] = {std::numbers::pi_v<float> / 2.0f, std::numbers::pi_v<float> * 3.0f / 2.0f};
+		float destinationRotationYTable[] = {std::numbers::pi_v<float> / 2.0f, std::numbers::pi_v<float> * 3.0f / 2.0f, std::numbers::pi_v<float>, 0};
 		// 状態に応じた角度を取得する
 		float destinationRotationY = destinationRotationYTable[static_cast<uint32_t>(lrDirection_)];
 		// 自キャラの角度を設定する

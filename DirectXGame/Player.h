@@ -7,9 +7,11 @@
 class MapChipField;
 class Enemy;
 
-enum class LRDirection {
+enum class Direction {
 	kRight,
 	kLeft,
+	kForward,
+	kBackward,
 };
 
 class Player {
@@ -156,7 +158,7 @@ private:
 	// 速度
 	Vector3 velocity_ = {};
 
-	LRDirection lrDirection_ = LRDirection::kRight;
+	Direction lrDirection_ = Direction::kRight;
 
 	// 旋回開始時の角度
 	float turnFirstRotationY_ = 0.0f;
